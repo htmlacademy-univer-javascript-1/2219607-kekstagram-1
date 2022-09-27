@@ -2,7 +2,7 @@ const COUNT_OBJECTS = 25;
 const MIN_LIKES = 15;
 const MAX_LIKES = 200;
 
-const NAME = [
+const NAMES = [
   'Рейнира',
   'Дейман',
   'Мортимер Смит',
@@ -46,7 +46,7 @@ const commentsArray = (count) => {
       id: i,
       avatar: `img/avatar-${getRandom(1, 6)}.svg`,
       message: MESSAGES[getRandom(0, MESSAGES.length - 1)],
-      name: NAME[getRandom(0, NAME.length - 1)]
+      name: NAMES[getRandom(0, NAMES.length - 1)]
     });
   }
   return array;
