@@ -13,11 +13,11 @@ const DESCRIPTIONS = ['Жизнь похожа на фотографию. Мы �
 
 export const arrayObjects = [];
 
-export const addPhotos = () => {
+const addPhotos = () => {
   for(let i = 0; i < COUNT_OBJECTS; i++){
     arrayObjects.push({
       id: i,
-      url: `photos/${i + 1}.jpg`,
+      url: `./photos/${i + 1}.jpg`,
       description: DESCRIPTIONS[getRandom(0, DESCRIPTIONS.length - 1)],
       likes: getRandom(MIN_LIKES, MAX_LIKES),
       comments: commentsArray(getRandom(0, 2))
