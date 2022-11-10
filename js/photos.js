@@ -13,7 +13,7 @@ const DESCRIPTIONS = ['Жизнь похожа на фотографию. Мы �
 
 export const arrayObjects = [];
 
-export const addPhotos = () => {
+const addPhotos = () => {
   for(let i = 0; i < COUNT_OBJECTS; i++){
     arrayObjects.push({
       id: i,
