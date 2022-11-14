@@ -18,9 +18,9 @@ const addPhotos = () => {
     arrayObjects.push({
       id: i,
       url: `./photos/${i + 1}.jpg`,
-      description: DESCRIPTIONS[getRandom(0, DESCRIPTIONS.length - 1)],
+      description: DESCRIPTIONS[getRandom(1, DESCRIPTIONS.length - 1)],
       likes: getRandom(MIN_LIKES, MAX_LIKES),
-      comments: commentsArray(getRandom(0, 2))
+      comments: commentsArray(getRandom(0, 4))
     });
   }
 };
