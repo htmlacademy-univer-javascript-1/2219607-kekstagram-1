@@ -8,3 +8,5 @@ export const getRandom = (start, end) => {
   const rand = start + Math.random() * (end - start);
   return Math.round(rand);
 };
+
+export const isEscapeKey = (evt) => evt.key === 'Escape';
