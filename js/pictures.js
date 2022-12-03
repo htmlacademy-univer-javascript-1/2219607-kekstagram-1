@@ -1,4 +1,3 @@
-import {arrayObjects} from './photos.js';
 import {getBigPicture} from './big-pictures.js';
 
 export const picturesContainer = document.querySelector('.pictures');
