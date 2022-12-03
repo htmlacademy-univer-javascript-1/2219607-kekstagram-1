@@ -17,11 +17,10 @@ const createPicture = (picture) => {
   return pictureElement;
 };
 
-const renderPictures = (photos) => {
+export const renderPictures = (photos) => {
   photos.forEach((item) => {
     dataFragment.append(createPicture(item));
   });
   picturesContainer.append(dataFragment);
 };
 
-renderPictures(arrayObjects);

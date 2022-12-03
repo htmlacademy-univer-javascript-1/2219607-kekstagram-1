@@ -1,4 +1,4 @@
-import {isEscapeKey} from './utils.js';
+import {closeModal, isEscapeKey, openModal} from './utils.js';
 
 
 const bigPicture = document.querySelector('.big-picture');
@@ -12,6 +12,8 @@ const socialCommentsCounter = bigPicture.querySelector('.social__comment-count')
 const commentsLoader = bigPicture.querySelector('.comments-loader');
 const bodyContainer = document.querySelector('body');
 
+const closeBigPicture = () => closeModal(bigPicture, bodyContainer);
+
 const getClosedByEscape = (evt) => {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
@@ -23,11 +25,6 @@ const removeCommentsCounterAndLoader= () => {
   socialCommentsCounter.classList.add('hidden');
   commentsLoader.classList.add('hidden');
 };
-
-function closeBigPicture () {
-  bodyContainer.classList.remove('modal-open');
-  bigPicture.classList.add('hidden');
-}
 
 const removeDefaultSocialComments = () => {
   while (socialComments.firstChild) {
@@ -70,8 +67,7 @@ const getComment = (comments) => {
 };
 
 export const getBigPicture = (picture) => {
-  bigPicture.classList.remove('hidden');
-  bodyContainer.classList.add('modal-open');
+  openModal(bigPicture, bodyContainer);
   bigPictureCloseButton.addEventListener('click', closeBigPicture);
   document.addEventListener('keydown', getClosedByEscape);
   removeCommentsCounterAndLoader();
