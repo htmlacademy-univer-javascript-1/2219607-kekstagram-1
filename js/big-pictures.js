@@ -1,5 +1,5 @@
-import {arrayObjects} from './photos.js';
-import {picturesContainer} from './pictures.js';
+import {closeModal, isEscapeKey, openModal} from './utils.js';
+
 
 const bigPicture = document.querySelector('.big-picture');
 const fullSizePictureImage = bigPicture.querySelector('.big-picture__img').querySelector('img');
@@ -12,10 +12,12 @@ const socialCommentsCounter = bigPicture.querySelector('.social__comment-count')
 const commentsLoader = bigPicture.querySelector('.comments-loader');
 const bodyContainer = document.querySelector('body');
 
-const getClosedByKeyPicture = (evt) => {
-  if(evt.key === 'Escape') {
-    bigPicture.classList.add('hidden');
-    bodyContainer.classList.remove('modal-open');
+const closeBigPicture = () => closeModal(bigPicture, bodyContainer);
+
+const getClosedByEscape = (evt) => {
+  if (isEscapeKey(evt)) {
+    evt.preventDefault();
+    closeBigPicture();
   }
 };
 
@@ -23,11 +25,6 @@ const removeCommentsCounterAndLoader= () => {
   socialCommentsCounter.classList.add('hidden');
   commentsLoader.classList.add('hidden');
 };
-
-function closeBigPicture () {
-  bodyContainer.classList.remove('modal-open');
-  bigPicture.classList.add('hidden');
-}
 
 const removeDefaultSocialComments = () => {
   while (socialComments.firstChild) {
@@ -42,63 +39,43 @@ const makeElementTemplate = (tagName, className) => {
 };
 
 const createSocialCommentsTemplate = (data) => {
+  const AVATAR_WIDTH = '35';
+  const AVATAR_HEIGHT = '35';
   const socialComment = makeElementTemplate('li', 'social__comment');
   const avatarImage = makeElementTemplate('img', 'social__picture');
   avatarImage.src = data.avatar;
   avatarImage.alt = data.name;
-  avatarImage.width = '35';
-  avatarImage.height = '35';
+  avatarImage.width = AVATAR_WIDTH;
+  avatarImage.height = AVATAR_HEIGHT;
   socialComment.append(avatarImage);
   const paragraphElement = makeElementTemplate('p', 'social__text');
   paragraphElement.textContent = data.message;
-  socialComment.append(paragraphElement);
+  socialComment.appendChild(paragraphElement);
   return socialComment;
 };
 
-const getComment = (dataPicture) => {
-  const actualComments = dataPicture.comments;
-  if (actualComments.length === 0) {
+const getComment = (comments) => {
+  if (comments.length === 0) {
     commentsCount.textContent = '0';
   }
   else {
-    commentsCount.textContent = String(actualComments.length);
+    commentsCount.textContent = comments.length;
     const commentFragment = document.createDocumentFragment();
-    actualComments.forEach((comment) => commentFragment.append(createSocialCommentsTemplate(comment)));
+    comments.forEach((comment) => commentFragment.append(createSocialCommentsTemplate(comment)));
     socialComments.append(commentFragment);
   }
 };
 
-const getIndex = (data, picUrl) => {
-  let ind = 0;
-  data.forEach((item) => {
-    if (item.url === picUrl){
-      ind = item.id;
-    }});
-  return ind;
-};
-
-const getBigPicture = (evt) => {
-  const selectedPost = evt.target.getAttribute('src');
-  const currentIndex = getIndex(arrayObjects, selectedPost);
-  const actualPicture = arrayObjects[currentIndex];
-  likesCount.textContent = String(actualPicture.likes);
-  photoDescription.textContent = actualPicture.description;
-  fullSizePictureImage.src = actualPicture.url;
-  getComment(actualPicture);
-};
-
-const openBigPicture = (evt) => {
-  const clickedElement = evt.target;
-  if (!clickedElement.closest('img')) {
-    return;
-  }
-  bigPicture.classList.remove('hidden');
-  bodyContainer.classList.add('modal-open');
+export const getBigPicture = (picture) => {
+  openModal(bigPicture, bodyContainer);
   bigPictureCloseButton.addEventListener('click', closeBigPicture);
-  document.addEventListener('keydown', getClosedByKeyPicture);
+  document.addEventListener('keydown', getClosedByEscape);
   removeCommentsCounterAndLoader();
   removeDefaultSocialComments();
-  getBigPicture(evt);
+  likesCount.textContent = picture.likes;
+  photoDescription.textContent = picture.description;
+  fullSizePictureImage.src = picture.url;
+  getComment(picture.comments);
 };
 
-picturesContainer.addEventListener('click', openBigPicture);
+
