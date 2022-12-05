@@ -3,6 +3,7 @@ import {COUNT_OBJECTS, commentsArray} from './comments.js';
 
 const MIN_LIKES = 15;
 const MAX_LIKES = 200;
+const MAX_COMMENTS = 10;
 
 const DESCRIPTIONS = ['Жизнь похожа на фотографию. Мы развиваемся только из негативов.',
   'Это моя жизнь, и мне так повезло ее жить.',
@@ -20,7 +21,7 @@ export const addPhotos = () => {
       url: `./photos/${i + 1}.jpg`,
       description: DESCRIPTIONS[getRandom(1, DESCRIPTIONS.length - 1)],
       likes: getRandom(MIN_LIKES, MAX_LIKES),
-      comments: commentsArray(getRandom(0, 4))
+      comments: commentsArray(getRandom(0, MAX_COMMENTS))
     });
   }
 };
