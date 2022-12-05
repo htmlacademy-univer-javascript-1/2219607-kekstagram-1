@@ -1,5 +1,6 @@
 import {closeModal, isEscapeKey, openModal} from './utils.js';
 
+const COMMENTS_NUMBER_LOAD = 5;
 
 const bigPicture = document.querySelector('.big-picture');
 const fullSizePictureImage = bigPicture.querySelector('.big-picture__img').querySelector('img');
@@ -12,17 +13,24 @@ const socialCommentsCounter = bigPicture.querySelector('.social__comment-count')
 const commentsLoader = bigPicture.querySelector('.comments-loader');
 const bodyContainer = document.querySelector('body');
 
-const closeBigPicture = () => closeModal(bigPicture, bodyContainer);
+let shownCommentsCounter = 0;
+let actualComments = [];
+
+
+const closeBigPicture = () => {
+  shownCommentsCounter = 0;
+  closeModal(bigPicture, bodyContainer);
+};
 
 const getClosedByEscape = (evt) => {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
+    shownCommentsCounter = 0;
     closeBigPicture();
   }
 };
 
-const removeCommentsCounterAndLoader= () => {
-  socialCommentsCounter.classList.add('hidden');
+const removeCommentsLoader= () => {
   commentsLoader.classList.add('hidden');
 };
 
@@ -54,28 +62,42 @@ const createSocialCommentsTemplate = (data) => {
   return socialComment;
 };
 
-const getComment = (comments) => {
-  if (comments.length === 0) {
-    commentsCount.textContent = '0';
+const getCommentsNumber = (count, totalComments) => {
+  let commentsDeclination;
+  if (totalComments % 10 === 1 && totalComments % 100 !== 11) {
+    commentsDeclination = 'комментария';
+  } else {
+    commentsDeclination = 'комментариев';
   }
-  else {
-    commentsCount.textContent = comments.length;
-    const commentFragment = document.createDocumentFragment();
-    comments.forEach((comment) => commentFragment.append(createSocialCommentsTemplate(comment)));
-    socialComments.append(commentFragment);
+  socialCommentsCounter.innerHTML = `${count} из <span class="comments-count">${totalComments}</span> ${commentsDeclination}`;
+};
+
+const getComment = () => {
+  const commentFragment = document.createDocumentFragment();
+  const currentComments = actualComments.splice(0, COMMENTS_NUMBER_LOAD);
+  shownCommentsCounter += currentComments.length;
+
+  currentComments.forEach((comment) => commentFragment.append(createSocialCommentsTemplate(comment)));
+  if (actualComments.length < 1) {
+    removeCommentsLoader();
   }
+  getCommentsNumber(shownCommentsCounter, commentsCount.textContent);
+  socialComments.append(commentFragment);
 };
 
 export const getBigPicture = (picture) => {
   openModal(bigPicture, bodyContainer);
+  commentsLoader.classList.remove('hidden');
+  commentsLoader.addEventListener('click', getComment);
   bigPictureCloseButton.addEventListener('click', closeBigPicture);
   document.addEventListener('keydown', getClosedByEscape);
-  removeCommentsCounterAndLoader();
   removeDefaultSocialComments();
   likesCount.textContent = picture.likes;
   photoDescription.textContent = picture.description;
   fullSizePictureImage.src = picture.url;
-  getComment(picture.comments);
+  commentsCount.textContent = String(picture.comments.length);
+  actualComments = picture.comments.slice();
+  getComment(actualComments);
 };
 
 
