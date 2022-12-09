@@ -1,5 +1,8 @@
 import {openModal, closeModal, isEscapeKey} from './utils.js';
 import {pristine, validateForm} from './uploadform-validation.js';
+import {controlScaleButtonHandler, getScaleDecrease, getScaleIncrease,
+  scaleControlBiggerElement, scaleControlSmallerElement, resetScaleSettings} from './image_scale.js';
+import {enableEffectPreview, disableEffectPreview} from './effects.js';
 
 const body = document.querySelector('body');
 const imgUploadForm = document.querySelector('.img-upload__form');
@@ -17,6 +20,8 @@ const closeOverlay = () => {
   document.removeEventListener('keydown', escListener);
   textHashtagsInput.removeEventListener('keydown', propagationStopper);
   textDescriptionInput.removeEventListener('keydown', propagationStopper);
+  resetScaleSettings();
+  disableEffectPreview();
 };
 
 const renderImageEditor = () => {
@@ -26,6 +31,9 @@ const renderImageEditor = () => {
   textDescriptionInput.addEventListener('keydown', propagationStopper);
   closeButton.addEventListener('click', closeButtonListener);
   document.addEventListener('keydown', escListener);
+  controlScaleButtonHandler(scaleControlSmallerElement, getScaleDecrease);
+  controlScaleButtonHandler(scaleControlBiggerElement, getScaleIncrease);
+  enableEffectPreview();
 };
 
 function closeButtonListener() {
