@@ -1,5 +1,5 @@
 const INITIAL_EFFECT = 'none';
-const EFFECTS = {
+const PICTURES_EFFECTS = {
   chrome: {
     filter: 'grayscale',
     range: {min: 0, max: 1.0},
@@ -50,7 +50,7 @@ const createEffectSlider = () => {
 
 const sliderConnector = () => {
   if (currentEffect !== 'none') {
-    const effect = EFFECTS[currentEffect];
+    const effect = PICTURES_EFFECTS[currentEffect];
     picture.style.filter = `${effect.filter}(${effectLevelSlider.noUiSlider.get()}${effect.measurementUnit})`;
     effectLevelValue.value = `${effectLevelSlider.noUiSlider.get()}${effect.measurementUnit}`;
   } else {
@@ -63,7 +63,7 @@ const changeEffect = (effect) => {
     effectLevelSlider.classList.toggle('hidden');
   }
   if (currentEffect !== 'none') {
-    const effectObj = EFFECTS[effect];
+    const effectObj = PICTURES_EFFECTS[effect];
     effectLevelSlider.noUiSlider.updateOptions({
       range: {
         min: effectObj.range.min,
@@ -104,4 +104,9 @@ export const disableEffectPreview = () => {
   picture.classList.remove(`effects__preview--${currentEffect}`);
   effectsList.removeEventListener('click', effectRadiosListener);
   effectLevelSlider.noUiSlider.destroy();
+};
+
+export const resetEffect = () => {
+  currentEffect = INITIAL_EFFECT;
+  imgUploadForm.reset();
 };

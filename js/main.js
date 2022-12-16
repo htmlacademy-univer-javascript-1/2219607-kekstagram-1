@@ -1,6 +1,10 @@
-import {addPhotos, arrayObjects} from './photos_gallery.js';
-import {renderPictures} from './pictures.js';
+import {getData} from './server.js';
+import {renderPictures, renderLoadError} from './pictures_gallery.js';
 import './loaderform-image.js';
 
-addPhotos();
-renderPictures(arrayObjects);
+getData((photos) => {
+  renderPictures(photos);
+},
+() => {
+  renderLoadError('Не удалось загрузить фотографии');
+});
