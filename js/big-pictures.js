@@ -92,12 +92,11 @@ export const getBigPicture = (picture) => {
   bigPictureCloseButton.addEventListener('click', closeBigPicture);
   document.addEventListener('keydown', getClosedByEscape);
   removeDefaultSocialComments();
-  likesCount.textContent = picture.likes;
   photoDescription.textContent = picture.description;
   fullSizePictureImage.src = picture.url;
+  likesCount.textContent = picture.likes;
   commentsCount.textContent = String(picture.comments.length);
   actualComments = picture.comments.slice();
   getComment(actualComments);
 };
-
 

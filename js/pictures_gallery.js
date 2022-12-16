@@ -16,10 +16,16 @@ const createPicture = (picture) => {
   return pictureElement;
 };
 
-export const renderPictures = (photos) => {
-  photos.forEach((item) => {
+export const renderPictures = (userData) => {
+  userData.forEach((item) => {
     dataFragment.append(createPicture(item));
   });
   picturesContainer.append(dataFragment);
 };
 
+export const renderLoadError = (message) => {
+  const error = document.createElement('div');
+  error.classList.add('error-load');
+  error.textContent = message;
+  picturesContainer.appendChild(error);
+};

@@ -2,7 +2,8 @@ import {openModal, closeModal, isEscapeKey} from './utils.js';
 import {pristine, validateForm} from './uploadform-validation.js';
 import {controlScaleButtonHandler, getScaleDecrease, getScaleIncrease,
   scaleControlBiggerElement, scaleControlSmallerElement, resetScaleSettings} from './image_scale.js';
-import {enableEffectPreview, disableEffectPreview} from './effects.js';
+import {enableEffectPreview, disableEffectPreview, resetEffect} from './picture_effects.js';
+import {sendData} from './server.js';
 
 const body = document.querySelector('body');
 const imgUploadForm = document.querySelector('.img-upload__form');
@@ -11,6 +12,9 @@ const imgUploadOverlay = imgUploadForm.querySelector('.img-upload__overlay');
 const closeButton = imgUploadForm.querySelector('.img-upload__cancel');
 const textHashtagsInput = imgUploadForm.querySelector('.text__hashtags');
 const textDescriptionInput = imgUploadForm.querySelector('.text__description');
+const uploadFormSubmitButtonElement = imgUploadForm.querySelector('.img-upload__submit');
+const successTemplate = document.querySelector('#success').content.querySelector('section');
+const errorTemplate = document.querySelector('#error').content.querySelector('section');
 
 const propagationStopper = (evt) => evt.stopPropagation();
 
@@ -38,19 +42,72 @@ const renderImageEditor = () => {
 
 function closeButtonListener() {
   closeOverlay();
+  resetEffect();
 }
 
 function escListener(evt) {
   if (isEscapeKey(evt)) {
-    imgUploadForm.reset();
     closeOverlay();
+    resetEffect();
   }
 }
+
+const blockSubmitButton = () => {
+  uploadFormSubmitButtonElement.disabled = true;
+};
+
+const unblockSubmitButton = () => {
+  uploadFormSubmitButtonElement.disabled = false;
+};
+
+const openOrCloseMessage = (message) => {
+  body.appendChild(message);
+  document.addEventListener('keydown', closeByEsc);
+  const closeMessage = () => {
+    message.remove();
+    document.removeEventListener('keydown', closeByEsc);
+  };
+  message.addEventListener('click', (evt) => {
+    if (evt.target.tagName !== 'DIV' && evt.target.tagName !== 'H2'){
+      closeMessage();
+    }
+  });
+  function closeByEsc(evt) {
+    if (isEscapeKey(evt)) {
+      closeMessage();
+    }
+  }
+};
+
+const showErrorMessageModal = () => {
+  const message = errorTemplate.cloneNode(true);
+  openOrCloseMessage(message);
+};
+
+const showSuccessMessageModal = () => {
+  const message = successTemplate.cloneNode(true);
+  openOrCloseMessage(message);
+};
 
 imgUploadForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   if (pristine.validate()) {
-    imgUploadForm.submit();
+    blockSubmitButton();
+    sendData (
+      () => {
+        unblockSubmitButton();
+        closeOverlay();
+        showSuccessMessageModal();
+        resetEffect();
+      },
+      () => {
+        showErrorMessageModal();
+        closeOverlay();
+        unblockSubmitButton();
+        uploadFile.value = '';
+      },
+      new FormData(imgUploadForm)
+    );
   }
 });
 
