@@ -1,8 +1,7 @@
 import {getData} from './server.js';
 import {renderPictures, renderLoadError} from './pictures_gallery.js';
-import './loaderform-image.js';
 import {getDataForFilters, showFilters, useFilters} from './filters.js';
-
+import './loaderform-image.js';
 
 getData((photos) => {
   renderPictures(photos);

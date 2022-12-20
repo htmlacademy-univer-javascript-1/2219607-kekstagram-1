@@ -28,7 +28,7 @@ const PICTURES_EFFECTS = {
 };
 
 const imgUploadForm = document.querySelector('.img-upload__form');
-const picture = imgUploadForm.querySelector('.img-upload__preview img');
+export const picture = imgUploadForm.querySelector('.img-upload__preview img');
 const effectsList = imgUploadForm.querySelector('.effects__list');
 const buttons = effectsList.querySelectorAll('.effects__radio');
 const effectLevelSlider = imgUploadForm.querySelector('.effect-level__slider');
