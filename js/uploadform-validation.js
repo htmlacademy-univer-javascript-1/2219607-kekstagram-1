@@ -20,21 +20,32 @@ export const pristine = new Pristine(imgUploadForm, {
   errorTextClass: 'form__error'
 });
 
+const makeHashtagsArr = (value) => {
+  const hashtags = value.toLowerCase().split(/[\s,]+/);
+  hashtags.forEach((item, index, obj) => {
+    if (item === ''){
+      obj.splice(index, 1);
+    }
+  });
+  return hashtags;
+};
+
 const validateDescription = (value) => checkMaxLength(value, MAX_DESCRIPTION_LENGTH);
 
-const validateHashtagsLength = (value) => value.split(' ').length <= MAX_HASHTAGS_LENGTH;
+const validateHashtagsLength = (value) => makeHashtagsArr(value).length <= MAX_HASHTAGS_LENGTH;
 
 const validateHashtagUniqueness = (value) => {
-  const hashtags = value.toLowerCase().split(' ');
+  const hashtags = makeHashtagsArr(value);
   return hashtags.length === new Set(hashtags).size;
 };
 
 const validateHashtagFormat = (value) => {
-  if (value === '') {
+  const hashtags = makeHashtagsArr(value);
+  if (hashtags[0] === '') {
     return true;
   }
   else {
-    return value.split(' ').every((hashtag) => REGEX.test(hashtag));
+    return hashtags.every((hashtag) => REGEX.test(hashtag));
   }
 };
 
