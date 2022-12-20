@@ -2,8 +2,11 @@ import {openModal, closeModal, isEscapeKey} from './utils.js';
 import {pristine, validateForm} from './uploadform-validation.js';
 import {controlScaleButtonHandler, getScaleDecrease, getScaleIncrease,
   scaleControlBiggerElement, scaleControlSmallerElement, resetScaleSettings} from './image_scale.js';
-import {enableEffectPreview, disableEffectPreview, resetEffect} from './picture_effects.js';
+import {enableEffectPreview, disableEffectPreview, resetEffect, picture} from './picture_effects.js';
 import {sendData} from './server.js';
+
+
+const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
 const body = document.querySelector('body');
 const imgUploadForm = document.querySelector('.img-upload__form');
@@ -26,18 +29,6 @@ const closeOverlay = () => {
   textDescriptionInput.removeEventListener('keydown', propagationStopper);
   resetScaleSettings();
   disableEffectPreview();
-};
-
-const renderImageEditor = () => {
-  openModal(imgUploadOverlay, body);
-  textHashtagsInput.addEventListener('keydown', propagationStopper);
-  textHashtagsInput.addEventListener('input', validateForm);
-  textDescriptionInput.addEventListener('keydown', propagationStopper);
-  closeButton.addEventListener('click', closeButtonListener);
-  document.addEventListener('keydown', escListener);
-  controlScaleButtonHandler(scaleControlSmallerElement, getScaleDecrease);
-  controlScaleButtonHandler(scaleControlBiggerElement, getScaleIncrease);
-  enableEffectPreview();
 };
 
 function closeButtonListener() {
@@ -63,15 +54,17 @@ const unblockSubmitButton = () => {
 const openOrCloseMessage = (message) => {
   body.appendChild(message);
   document.addEventListener('keydown', closeByEsc);
+  message.addEventListener('click', alertClickHandler);
   const closeMessage = () => {
+    message.removeEventListener('click', alertClickHandler);
     message.remove();
     document.removeEventListener('keydown', closeByEsc);
   };
-  message.addEventListener('click', (evt) => {
+  function alertClickHandler(evt) {
     if (evt.target.tagName !== 'DIV' && evt.target.tagName !== 'H2'){
       closeMessage();
     }
-  });
+  }
   function closeByEsc(evt) {
     if (isEscapeKey(evt)) {
       closeMessage();
@@ -89,7 +82,7 @@ const showSuccessMessageModal = () => {
   openOrCloseMessage(message);
 };
 
-imgUploadForm.addEventListener('submit', (evt) => {
+const formSubmitHandler = (evt) => {
   evt.preventDefault();
   if (pristine.validate()) {
     blockSubmitButton();
@@ -109,9 +102,30 @@ imgUploadForm.addEventListener('submit', (evt) => {
       new FormData(imgUploadForm)
     );
   }
-});
+};
+
+const renderImageEditor = () => {
+  openModal(imgUploadOverlay, body);
+  textHashtagsInput.addEventListener('keydown', propagationStopper);
+  textHashtagsInput.addEventListener('input', validateForm);
+  textDescriptionInput.addEventListener('keydown', propagationStopper);
+  closeButton.addEventListener('click', closeButtonListener);
+  document.addEventListener('keydown', escListener);
+  imgUploadForm.addEventListener('submit', formSubmitHandler);
+  controlScaleButtonHandler(scaleControlSmallerElement, getScaleDecrease);
+  controlScaleButtonHandler(scaleControlBiggerElement, getScaleIncrease);
+  enableEffectPreview();
+};
 
 uploadFile.addEventListener('change', (evt) => {
   evt.preventDefault();
-  renderImageEditor();
+  const file = uploadFile.files[0];
+  const fileName = file.name.toLowerCase();
+  if (FILE_TYPES.some((type) => fileName.endsWith(type))) {
+    picture.src = URL.createObjectURL(file);
+    renderImageEditor();
+  }
+  else {
+    showErrorMessageModal();
+  }
 });
